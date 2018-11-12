@@ -1,4 +1,4 @@
-# S-Rep
+# SRep
 
 Python S-Rep class and utilities (such as python CPNS code)
 
