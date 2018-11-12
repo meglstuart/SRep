@@ -95,10 +95,6 @@ class SRep:
         self.nUp = self.__vtkUpPoly.GetNumberOfPoints()
 
         self.upMedialPoints = numpy_support.vtk_to_numpy(self.__vtkUpPoly.GetPoints().GetData())
-        self.upBoundaryPoints = np.zeros([self.nUp, 3])
-        for i in xrange(self.nUp):
-            self.upBoundaryPoints[i] = (self.upMedialPoints[i]
-                                        + self.upLengths[i]*self.upDirs[i])
 
 
         self.downLengths = numpy_support.vtk_to_numpy(self.__vtkDownPoly
@@ -108,11 +104,6 @@ class SRep:
         self.nDown = self.__vtkDownPoly.GetNumberOfPoints()
 
         self.downMedialPoints = numpy_support.vtk_to_numpy(self.__vtkDownPoly.GetPoints().GetData())
-        self.downPoints = np.zeros([2*self.nDown, 3])
-        self.downBoundaryPoints = np.zeros([self.nDown, 3])
-        for i in xrange(self.nDown):
-            self.downBoundaryPoints[i] = (self.downMedialPoints[i]
-                                        + self.downLengths[i]*self.downDirs[i])
 
 
         self.crestLengths = numpy_support.vtk_to_numpy(self.__vtkCrestPoly
@@ -123,10 +114,7 @@ class SRep:
 
         self.crestMedialPoints = numpy_support.vtk_to_numpy(self.__vtkCrestPoly.GetPoints().GetData())
         self.crestPoints = np.zeros([2*self.nCrest, 3])
-        self.crestBoundaryPoints = np.zeros([self.nCrest, 3])
-        for i in xrange(self.nCrest):
-            self.crestBoundaryPoints[i] = (self.crestMedialPoints[i]
-                                        + self.crestLengths[i]*self.crestDirs[i])
+
 
 
     def getUpBoundaryPt(self,i):
@@ -139,17 +127,17 @@ class SRep:
         return self.crestMedialPoints[i] + self.crestLengths[i]*self.crestDirs[i]
 
 
-    def updatePolyfromPoints(self):
+    def updatePoly(self):
         """ Assuming the new points have the same graph structure as the
         old points (i.e nobody has swapped places) """
 
-        self.__vtkUpPoly = self.__updateSupport(self.__vtkUpPoly,self.upMedialPoints, self.upBoundaryPoints)
-        self.__vtkDownPoly = self.__updateSupport(self.__vtkDownPoly,self.downMedialPoints, self.downBoundaryPoints)
-        self.__vtkCrestPoly = self.__updateSupport(self.__vtkCrestPoly,self.crestMedialPoints, self.crestBoundaryPoints)
+        self.__vtkUpPoly = self.__updateSupport(self.__vtkUpPoly,self.upMedialPoints, self.upDirs, self.upLengths)
+        self.__vtkDownPoly = self.__updateSupport(self.__vtkDownPoly,self.downMedialPoints, self.downDirs, self.downLengths)
+        self.__vtkCrestPoly = self.__updateSupport(self.__vtkCrestPoly,self.crestMedialPoints, self.crestDirs, self.crestLengths)
 
 
 
-    def __updateSupport(self, origPoly, medials, boundaries):
+    def __updateSupport(self, origPoly, medials, spokes, radii):
         poly = vtk.vtkPolyData()
         poly.DeepCopy(origPoly)
         if poly.GetPointData().HasArray("spokeDirection"):
@@ -167,13 +155,10 @@ class SRep:
         spoke_lengths.SetNumberOfComponents(1)
         spoke_lengths.SetName("spokeLength")
 
-        for (x,y) in zip(medials,boundaries):
+        for (x, u, r) in zip(medials, spokes, radii):
             vtk_points.InsertNextPoint(x)
-            dir = np.subtract(y,x)
-            length = np.linalg.norm(dir)
-            dir = dir/length
-            spoke_directions.InsertNextTuple(dir)
-            spoke_lengths.InsertNextTuple1(length)
+            spoke_directions.InsertNextTuple(u)
+            spoke_lengths.InsertNextTuple1(r)
 
         poly.SetPoints(vtk_points)
         poly.GetPointData().AddArray(spoke_directions)
@@ -185,7 +170,10 @@ class SRep:
 
 
     def writeToFolder(self,foldername):
+        self.updatePoly()
         headerFolder = os.path.abspath(foldername)
+        if not os.path.exists(headerFolder):
+            os.makedirs(headerFolder)
 
         outputUp = headerFolder + '/up.vtp'
         outputDown = headerFolder + '/down.vtp'

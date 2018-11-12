@@ -14,12 +14,19 @@ print(srep.nUp)
 
 # now you can edit the boundary and medial points
 
-#let's make each of the spokes on the up side twice as long
+#We can get up, down, and crest boundary points as follows:
 for i in xrange(srep.nUp):
     print(srep.getUpBoundaryPt(i))
 
-# We updated the boundary points, but that has not updated the radii.
-# Soon, I will implement updating the whole srep class when changes are made to points
+#Let's make the up spokes twice as long:
+srep.upLengths = 2.0*srep.upLengths
+print(srep.upLengths)
 
 # now, we update the vtk data structure based on our change.
-srep.updatePolyfromPoints()
+srep.updatePoly()
+
+
+# Then write to file. Note, this function also calls self.updatePoly(),
+# so it's not strictly neccessary to updatePoly by hand before
+
+srep.writeToFolder(outputpath)
