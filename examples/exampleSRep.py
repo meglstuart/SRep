@@ -16,8 +16,7 @@ print(srep.nUp)
 
 #let's make each of the spokes on the up side twice as long
 for i in xrange(srep.nUp):
-    srep.upBoundaryPoints[i] = (srep.upMedialPoints[i]
-                                + 2*srep.upLengths[i]*srep.upDirs[i])
+    print(srep.getUpBoundaryPt(i))
 
 # We updated the boundary points, but that has not updated the radii.
 # Soon, I will implement updating the whole srep class when changes are made to points
