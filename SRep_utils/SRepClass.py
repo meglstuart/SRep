@@ -5,7 +5,7 @@ import os, logging
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element, SubElement
 from ElementTree_pretty import prettify
-logging.basicConfig(filename='SRep.log',level=logging.DEBUG)
+# logging.basicConfig(filename='SRep.log',level=logging.DEBUG)
 
 from vtk.util import numpy_support
 
@@ -28,12 +28,6 @@ class SRep:
         upBoundaryPoints            nUp x 3 array containing head points of up spokes
         downBoundaryPoints          nDown x 3 array containing head points of down spokes
         crestBoundaryPoints         nCrest x 3 array containing head points of crest spokes
-        upPoints                    2nUp x 3 array containing tail and head points of up upSpokes
-                                        arranged like: tail, head, tail head, ...
-        downPoints                  2nDown x 3 array containing tail and head points of up downSpokes
-                                        arranged like: tail, head, tail head, ...
-        crestPoints                 2nCrest x 3 array containing tail and head points of up crestSpokes
-                                        arranged like: tail, head, tail head, ...
         upGrid         Not yet implemented: Dictionary implementation of a graph
         downGrid       Not yet implemented: Dictionary implementation of a graph
         crestLines     Not yet implemented: Dictionary implementation of a graph
@@ -136,7 +130,7 @@ class SRep:
         for i in xrange(self.nCrest):
             self.crestPoints[2*i] = self.crestMedialPoints[i]
             self.crestPoints[2*i+1] = (self.crestMedialPoints[i]
-                                        + self.crestLengths[i]*self.crestDirs[i])
+                                    +self.crestLengths[i]*self.crestDirs[i])
             self.crestBoundaryPoints[i] = (self.crestMedialPoints[i]
                                         + self.crestLengths[i]*self.crestDirs[i])
 
