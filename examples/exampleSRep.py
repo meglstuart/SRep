@@ -1,18 +1,16 @@
 import numpy as np
 import sys
 from os import path
+
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from SRep_utils import SRep
-# from ..SRep_utils import SRep
+
 
 headerpath = 'test_object/201295/header.xml'
 outputpath = 'test_object/testoutput'
 
+# intialize an srep stored in headerpath
 srep = SRep(headerpath)
-print(srep.nUp)
-# print(srep.upBoundaryPoints)
-
-# now you can edit the boundary and medial points
 
 #We can get up, down, and crest boundary points as follows:
 for i in xrange(srep.nUp):
@@ -24,7 +22,6 @@ print(srep.upLengths)
 
 # now, we update the vtk data structure based on our change.
 srep.updatePoly()
-
 
 # Then write to file. Note, this function also calls self.updatePoly(),
 # so it's not strictly neccessary to updatePoly by hand before
