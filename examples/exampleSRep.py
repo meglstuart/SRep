@@ -1,8 +1,12 @@
 import numpy as np
-from SRepClass import SRep
+import sys
+from os import path
+sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+from SRep_utils import SRep
+# from ..SRep_utils import SRep
 
-headerpath = 'test_objects/201295/header.xml'
-outputpath = 'test_objects/testoutput'
+headerpath = 'test_object/201295/header.xml'
+outputpath = 'test_object/testoutput'
 
 srep = SRep(headerpath)
 print(srep.nUp)
